@@ -6,75 +6,75 @@ import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 dayjs.extend(advancedFormat);
 
-export const loader =
-  (store) =>
-  async ({ request }) => {
-    const user = store.getState().userState.user;
+const getUserFromLocalStorage = () => {
+  return JSON.parse(localStorage.getItem("user")) || null;
+};
 
-    if (!user) {
-      toast.warn("You must be logged in to view orders");
+export const loader = async ({ request }) => {
+  const user = getUserFromLocalStorage();
+
+  if (!user) {
+    toast.warn("You must be logged in to view orders");
+    return redirect("/login");
+  }
+  const params = Object.fromEntries([
+    ...new URL(request.url).searchParams.entries(),
+  ]);
+
+  try {
+    const response = await customFetch.get("/orders", {
+      params,
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+
+    return { orders: response.data.data, meta: response.data.meta };
+  } catch (error) {
+    console.log(error);
+    const errorMessage =
+      error?.response?.data?.error?.message ||
+      "there was an error accessing your orders";
+
+    toast.error(errorMessage);
+    if (error?.response?.status === 401 || error?.response?.status === 403)
       return redirect("/login");
-    }
-    const params = Object.fromEntries([
-      ...new URL(request.url).searchParams.entries(),
-    ]);
 
-    try {
-      const response = await customFetch.get("/orders", {
-        params,
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
+    return null;
+  }
+};
 
-      return { orders: response.data.data, meta: response.data.meta };
-    } catch (error) {
-      console.log(error);
-      const errorMessage =
-        error?.response?.data?.error?.message ||
-        "there was an error accessing your orders";
+export const action = async ({ request }) => {
+  const formData = await request.formData();
+  const id = formData.get("id");
+  const user = getUserFromLocalStorage();
 
-      toast.error(errorMessage);
-      if (error?.response?.status === 401 || error?.response?.status === 403)
-        return redirect("/login");
-
+  try {
+    if (user.username === "demo user") {
+      toast.error("Demo user cannot delete orders");
       return null;
     }
-  };
+    await customFetch.delete(`/orders/${id}`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+    toast.success("Order deleted successfully");
+    return null;
+  } catch (error) {
+    console.error(error);
+    const errorMessage =
+      error?.response?.status === 403
+        ? "The demo API does not allow deleting orders. This is a restriction on the server."
+        : error?.response?.data?.error?.message ||
+          "there was an error deleting your order";
 
-export const action =
-  (store) =>
-  async ({ request }) => {
-    const formData = await request.formData();
-    const id = formData.get("id");
-    const user = store.getState().userState.user;
+    toast.error(errorMessage);
 
-    try {
-      if (user.username === "demo user") {
-        toast.error("Demo user cannot delete orders");
-        return null;
-      }
-      await customFetch.delete(`/orders/${id}`, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      toast.success("Order deleted successfully");
-      return null;
-    } catch (error) {
-      console.error(error);
-      const errorMessage =
-        error?.response?.status === 403
-          ? "The demo API does not allow deleting orders. This is a restriction on the server."
-          : error?.response?.data?.error?.message ||
-            "there was an error deleting your order";
-
-      toast.error(errorMessage);
-
-      if (error?.response?.status === 401) return redirect("/login");
-      return null;
-    }
-  };
+    if (error?.response?.status === 401) return redirect("/login");
+    return null;
+  }
+};
 
 const Orders = () => {
   const { orders, meta } = useLoaderData();

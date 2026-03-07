@@ -24,10 +24,8 @@ import { loader as checkoutLoader } from "../pages/Checkout";
 import { loader as ordersLoader } from "../pages/Orders";
 
 import { action as registerAction } from "../pages/Register";
-import { action as loginAction } from "../pages/Login";
 import { action as checkoutAction } from "../pages/Checkout";
 import { action as ordersAction } from "../pages/Orders";
-import { store } from "./store";
 
 const appRouter = createBrowserRouter([
   {
@@ -61,14 +59,14 @@ const appRouter = createBrowserRouter([
       {
         path: "checkout",
         element: <Checkout />,
-        loader: checkoutLoader(store),
-        action: checkoutAction(store),
+        loader: checkoutLoader,
+        action: checkoutAction,
       },
       {
         path: "orders",
         element: <Orders />,
-        loader: ordersLoader(store),
-        action: ordersAction(store),
+        loader: ordersLoader,
+        action: ordersAction,
       },
     ],
   },
@@ -76,7 +74,6 @@ const appRouter = createBrowserRouter([
     path: "/login",
     element: <Login />,
     errorElement: <Error />,
-    action: loginAction(store),
   },
   {
     path: "/register",
@@ -91,4 +88,3 @@ const AppRoutes = () => {
 };
 
 export default AppRoutes;
-

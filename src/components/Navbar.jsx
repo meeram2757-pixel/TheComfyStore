@@ -2,17 +2,18 @@ import { BsCart3, BsMoonFill, BsSunFill } from "react-icons/bs";
 import { FaBarsStaggered, FaXmark } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import NavLinks from "./NavLinks";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleTheme } from "../userSlice";
+import { useUser } from "../context/UserContext";
+import { useCart } from "../context/CartContext";
 import { useState, useRef } from "react";
 
 const Navbar = () => {
-  const dispatch = useDispatch();
+  const { toggleTheme } = useUser();
+  const { numItemsInCart } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   const handleThemeToggle = () => {
-    dispatch(toggleTheme());
+    toggleTheme();
   };
 
   const handleCloseMenu = () => {
@@ -21,8 +22,6 @@ const Navbar = () => {
       dropdownRef.current.querySelector("ul")?.blur();
     }
   };
-
-  const { numItemsInCart } = useSelector((state) => state.cartState);
 
   return (
     <nav className="bg-base-200">

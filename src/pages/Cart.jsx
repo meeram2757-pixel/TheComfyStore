@@ -1,12 +1,12 @@
-import { useSelector } from "react-redux";
 import { SectionTitle, CartSummary } from "../components";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
+import { useUser } from "../context/UserContext";
+import { useCart } from "../context/CartContext";
 
 const Cart = () => {
-  const user = useSelector((state) => state.userState.user);
-  const cartItems = useSelector((state) => state.cartState.cartItems);
-  const numItemsInCart = useSelector((state) => state.cartState.numItemsInCart);
+  const { user } = useUser();
+  const { cartItems, numItemsInCart } = useCart();
 
   if (numItemsInCart === 0) {
     return <SectionTitle title="Your cart is empty" />;

@@ -2,8 +2,7 @@ import { useLoaderData } from "react-router-dom";
 import { customFetch } from "../api";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addItem } from "../cartSlice";
+import { useCart } from "../context/CartContext";
 
 export const loader = async ({ params }) => {
   const response = await customFetch(`/products/${params.id}`);
@@ -21,7 +20,7 @@ const SingleProduct = () => {
   const [productColor, setProductColor] = useState(colors[0]);
   const [amount, setAmount] = useState(1);
 
-  const dispatch = useDispatch();
+  const { addItem } = useCart();
 
   const cartProduct = {
     cartID: product.id + productColor,
@@ -35,7 +34,7 @@ const SingleProduct = () => {
   };
 
   const addToCart = () => {
-    dispatch(addItem({ product: cartProduct }));
+    addItem({ product: cartProduct });
   };
 
   const handleAmount = (e) => {

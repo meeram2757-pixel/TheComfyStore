@@ -1,5 +1,5 @@
-import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
 const links = [
   { id: 1, url: "/", text: "home" },
@@ -11,7 +11,7 @@ const links = [
 ];
 
 const NavLinks = () => {
-  const user = useSelector((state) => state.userState.user);
+  const { user } = useUser();
   return (
     <>
       {links.map((link) => {

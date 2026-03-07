@@ -1,18 +1,17 @@
-import { useDispatch } from "react-redux";
-import { removeItem, editItem } from "../cartSlice";
+import { useCart } from "../context/CartContext";
 
 const CartItem = ({ cartItem }) => {
   const { cartID, title, price, image, amount, company, productColor } =
     cartItem;
 
-  const dispatch = useDispatch();
+  const { removeItem, editItem } = useCart();
 
   const removeItemFromCart = () => {
-    dispatch(removeItem({ cartID }));
+    removeItem({ cartID });
   };
 
   const handleAmount = (e) => {
-    dispatch(editItem({ cartID, amount: parseInt(e.target.value) }));
+    editItem({ cartID, amount: parseInt(e.target.value) });
   };
 
   return (

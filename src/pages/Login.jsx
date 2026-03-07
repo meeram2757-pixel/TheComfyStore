@@ -1,33 +1,36 @@
 import { FormInput, SubmitButton } from "../components";
-import { Form, Link, useNavigate, redirect } from "react-router-dom";
+import { Form, Link, useNavigate } from "react-router-dom";
 import { customFetch } from "../api";
 import { toast } from "react-toastify";
-import { loginUser } from "../userSlice";
-import { useDispatch } from "react-redux";
+import { useUser } from "../context/UserContext";
+import { useState } from "react";
 
-export const action =
-  (store) =>
-  async ({ request }) => {
-    const formData = await request.formData();
+const Login = () => {
+  const navigate = useNavigate();
+  const { loginUser } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData);
-   
+
+    setIsSubmitting(true);
     try {
       const response = await customFetch.post("/auth/local", data);
-      store.dispatch(loginUser(response.data));
+      loginUser(response.data);
       toast.success("logged in successfully");
-      return redirect("/");
+      navigate("/");
     } catch (error) {
       const errorMessage =
         error?.response?.data?.error?.message ||
         "please check your credentials";
       toast.error(errorMessage);
-      return null;
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-const Login = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const loginGuestUser = async () => {
     try {
@@ -35,7 +38,7 @@ const Login = () => {
         identifier: "test@test.com",
         password: "secret",
       });
-      dispatch(loginUser(response.data));
+      loginUser(response.data);
       toast.success("logged in as guest");
       navigate("/");
     } catch (error) {
@@ -48,6 +51,7 @@ const Login = () => {
       <Form
         method="post"
         className="card w-96 p-8 bg-base-100 shadow-lg flex flex-col gap-y-4"
+        onSubmit={handleSubmit}
       >
         <h4 className="text-center text-3xl font-bold">Login</h4>
         <FormInput
@@ -63,7 +67,7 @@ const Login = () => {
           defaultValue="secret"
         />
         <div className="mt-4">
-          <SubmitButton text="login" />
+          <SubmitButton text={isSubmitting ? "logging in..." : "login"} />
         </div>
         <button
           type="button"

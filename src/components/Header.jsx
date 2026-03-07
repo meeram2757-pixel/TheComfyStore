@@ -1,17 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { clearCart } from "../cartSlice";
-import { logoutUser } from "../userSlice";
+import { useUser } from "../context/UserContext";
+import { useCart } from "../context/CartContext";
 
 const Header = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.userState);
+  const { user, logoutUser } = useUser();
+  const { clearCart } = useCart();
 
   const handleUserLogout = () => {
     navigate("/");
-    dispatch(clearCart());
-    dispatch(logoutUser());
+    clearCart();
+    logoutUser();
   };
 
   return (

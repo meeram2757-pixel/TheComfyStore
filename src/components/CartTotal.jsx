@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux";
+import { useCart } from "../context/CartContext";
 
 const CartTotal = () => {
-  const { cartTotal, shipping, tax, orderTotal } = useSelector(
-    (state) => state.cartState,
-  );
+  const { cartTotal, shipping, tax, orderTotal } = useCart();
 
   const formatPrice = (price) => {
     return (price / 100).toLocaleString("en-US", {
