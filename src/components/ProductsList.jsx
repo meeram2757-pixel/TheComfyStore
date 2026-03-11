@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import useProducts from "../features/products/useProducts";
 import ProductCard from "../features/products/ProductCard";
+import { formatPrice } from "../utils/formatPrice";
 
 const ProductsList = () => {
   const products = useProducts();
@@ -9,10 +10,9 @@ const ProductsList = () => {
     <div className="mt-12 grid gap-y-8">
       {products.map((product) => {
         const { title, price, image, company } = product.attributes;
-        const dollarsAmount = (price / 100).toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
+
+        const dollarsAmount = formatPrice(price);
+
         return (
           <ProductCard key={product.id}>
             <Link

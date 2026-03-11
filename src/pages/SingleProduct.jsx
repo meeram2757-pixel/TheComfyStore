@@ -3,6 +3,7 @@ import { customFetch } from "../api";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { formatPrice } from "../utils/formatPrice";
 
 export const loader = async ({ params }) => {
   const response = await customFetch(`/products/${params.id}`);
@@ -13,11 +14,10 @@ const SingleProduct = () => {
   const { product } = useLoaderData();
   const { image, title, price, description, colors, company } =
     product.attributes;
-  const dollarsAmount = (price / 100).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-  const [productColor, setProductColor] = useState(colors[0]);
+  
+    const dollarsAmount = formatPrice(price);
+   
+    const [productColor, setProductColor] = useState(colors[0]);
   const [amount, setAmount] = useState(1);
 
   const { addItem } = useCart();
