@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const FormRange = ({ label, name, size, price }) => {
+const FormRange = ({ label, name, size, price, onChange }) => {
   const step = 1000;
   const maxPrice = 100000;
   const [selectedPrice, setSelectedPrice] = useState(price || maxPrice);
@@ -22,7 +22,10 @@ const FormRange = ({ label, name, size, price }) => {
         min={0}
         max={maxPrice}
         value={selectedPrice}
-        onChange={(e) => setSelectedPrice(e.target.value)}
+        onChange={(e) => {
+          setSelectedPrice(e.target.value);
+          onChange && onChange(e);
+        }}
         className={`range range-primary ${size}`}
         step={step}
       />

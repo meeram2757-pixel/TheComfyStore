@@ -1,65 +1,114 @@
-import { Form, Link } from "react-router-dom";
+// import { Form, Link } from "react-router-dom";
+import { Form } from "react-router-dom";
+//
+import { useState } from "react";
 import FormInput from "../../components/FormInput";
 import FormSelect from "../../components/FormSelect";
 import FormRange from "../../components/FormRange";
 import FormCheckbox from "../../components/FormCheckbox";
-import useFilters from "./useFilters";
 
-const FilterPanel = () => {
-  const { meta, params } = useFilters();
-  const { search, company, category, shipping, order, price } = params;
+const Filters = ({ filters, applyFilters, meta }) => {
+    const [localFilters, setLocalFilters] = useState(filters);
+    const { search, category, company, order, price, shipping } = localFilters;
+    const [resetKey, setResetKey] = useState(0);
+
+  const handleChange = (e) => {
+    const { name, type, value, checked } = e.target;
+
+    setLocalFilters((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+    const submitButton = (e) => {
+    e.preventDefault();
+    applyFilters(localFilters);
+  };
+
+ 
+    const resetButton = (e) => {
+    e.preventDefault();
+    setResetKey((prev) => prev + 1);
+
+    const defaults = {
+      search: "",
+      category: "all",
+      company: "all",
+      order: "a-z",
+      price: 100000,
+      shipping: false,
+    };
+
+    setLocalFilters(defaults);
+    applyFilters(defaults);
+  };
 
   return (
-    <Form className="bg-base-200 rounded-md px-8 py-4 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center">
+    <form
+      key={resetKey}
+      onSubmit={submitButton}
+      className='bg-base-200 rounded-md px-8 py-4 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-center'
+    >
       <FormInput
-        type="search"
-        label="search product"
-        name="search"
-        size="input-sm"
-        defaultValue={search}
+        type='search'
+        label='search product'
+        name='search'
+        size='input-sm'
+        value={search}
+        onChange={handleChange}
+
       />
       <FormSelect
-        label="select category"
-        name="category"
+        label='category'
+        name='category'
         list={meta.categories}
-        size="select-sm"
-        defaultValue={category}
+        size='select-sm'
+        value={category}
+        onChange={handleChange}
+
       />
       <FormSelect
-        label="select company"
-        name="company"
+        label='company'
+        name='company'
         list={meta.companies}
-        size="select-sm"
-        defaultValue={company}
+        size='select-sm'
+        value={company}
+        onChange={handleChange}
+
       />
       <FormSelect
-        label="sort by"
-        name="order"
-        list={["a-z", "z-a", "high", "low"]}
-        size="select-sm"
-        defaultValue={order}
+        label='sort by'
+        name='order'
+        list={['a-z', 'z-a', 'high', 'low']}
+        size='select-sm'
+        value={order}
+        onChange={handleChange}
+
       />
       <FormRange
-        name="price"
-        label="select price"
-        size="range-sm"
+        name='price'
+        label='select price'
+        size='range-sm'
         price={price}
+        onChange={handleChange}
+
       />
       <FormCheckbox
-        name="shipping"
-        label="free shipping"
-        size="checkbox-sm"
-        defaultValue={shipping}
+        name='shipping'
+        label='free shipping'
+        size='checkbox-sm'
+        checked={shipping}
+        onChange={handleChange}
+
       />
-      <button type="submit" className="btn btn-primary btn-sm">
+      <button type='submit' className='btn btn-primary btn-sm'>
         search
       </button>
-      <Link to="/products" className="btn btn-accent btn-sm">
+      <button type='button' onClick={resetButton} className='btn btn-accent btn-sm'>
         reset
-      </Link>
-    </Form>
+      </button>
+    </form>
   );
 };
-
-export default FilterPanel;
-
+export default Filters;

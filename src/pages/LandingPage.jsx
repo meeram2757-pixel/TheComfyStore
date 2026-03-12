@@ -1,7 +1,11 @@
 import { customFetch } from "../api";
-import { Link } from "react-router-dom";
+// import { useState, useEffect,useRef} from "react";
+// import { Link } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
+
 import ProductsGrid from "../components/ProductsGrid";
 import SectionTitle from "../components/SectionTitle";
+
 
 import hero1 from "../assets/hero1.webp";
 import hero2 from "../assets/hero2.webp";
@@ -18,6 +22,8 @@ export const loader = async () => {
 };
 
 const LandingPage = () => {
+    const { products } = useLoaderData();
+
   return (
     <>
       <div className="grid lg:grid-cols-2 gap-24 items-center">
@@ -52,7 +58,9 @@ const LandingPage = () => {
 
       <div className="pt-24">
         <SectionTitle title="featured products" />
-        <ProductsGrid />
+        <ProductsGrid products={products} />
+
+        {/* <ProductsGrid /> */}
       </div>
     </>
   );
