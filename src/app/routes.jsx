@@ -13,7 +13,6 @@ import {
 } from "../pages";
 
 import CartPage from "../features/cart/CartPage";
-import ProductsPage from "../features/products/ProductsPage";
 
 import { ErrorElement } from "../components";
 
@@ -41,7 +40,7 @@ const appRouter = createBrowserRouter([
       },
       {
         path: "products",
-        element: <ProductsPage />,
+        element: <Products />,
         errorElement: <ErrorElement />,
         loader: productsLoader,
       },
