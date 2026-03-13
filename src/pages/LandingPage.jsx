@@ -1,11 +1,9 @@
+import { useEffect, useRef, useState } from "react";
 import { customFetch } from "../api";
-// import { useState, useEffect,useRef} from "react";
-// import { Link } from "react-router-dom";
 import { Link, useLoaderData } from "react-router-dom";
 
 import ProductsGrid from "../components/ProductsGrid";
 import SectionTitle from "../components/SectionTitle";
-
 
 import hero1 from "../assets/hero1.webp";
 import hero2 from "../assets/hero2.webp";
@@ -22,7 +20,33 @@ export const loader = async () => {
 };
 
 const LandingPage = () => {
-    const { products } = useLoaderData();
+  const { products } = useLoaderData();
+
+  //  state + ref for auto-scrolling
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % carouselImages.length;
+        const item = container.children[next];
+
+        if (item) {
+          container.scrollTo({
+            left: item.offsetLeft - container.offsetLeft,
+            behavior: "smooth",
+          });
+        }
+        return next;
+      });
+    }, 4000); 
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -32,9 +56,9 @@ const LandingPage = () => {
             We are changing the way people shop
           </h1>
           <p className="mt-8 max-w-xl text-lg leading-8">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore repellat explicabo 
-            enim soluta temporibus asperiores aut obcaecati perferendis porro nobis.
-
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore
+            repellat explicabo enim soluta temporibus asperiores aut obcaecati
+            perferendis porro nobis.
           </p>
           <div className="mt-10">
             <Link to="/products" className="btn btn-primary">
@@ -42,7 +66,11 @@ const LandingPage = () => {
             </Link>
           </div>
         </div>
-        <div className="hidden h-[28rem] lg:carousel carousel-center p-4 space-x-4 bg-neutral rounded-box">
+
+        <div
+          ref={carouselRef}
+          className="hidden h-[28rem] lg:carousel carousel-center p-4 space-x-4 bg-neutral rounded-box"
+        >
           {carouselImages.map((image) => {
             return (
               <div key={image} className="carousel-item">
@@ -59,10 +87,9 @@ const LandingPage = () => {
       <div className="pt-24">
         <SectionTitle title="featured products" />
         <ProductsGrid products={products} />
-
-        {/* <ProductsGrid /> */}
       </div>
     </>
   );
 };
+
 export default LandingPage;
